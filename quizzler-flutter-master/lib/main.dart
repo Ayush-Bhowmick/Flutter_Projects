@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart'; // for Abstraction purposes
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 
@@ -29,6 +30,42 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
+
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer =
+        quizBrain.getCorrectAnswer(); // FOR ENCAPSULATION PURPOSES
+
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        // to check if(before) the last question is reached or not
+        Alert(
+                context: context,
+                title: 'Finished',
+                desc: 'You\'ve reached the end of the quiz')
+            .show();
+
+        quizBrain.reset(); // reset the questionNumber
+
+        scoreKeeper = [];
+      }
+
+      if (userPickedAnswer == correctAnswer) {
+        print('User got it right');
+        scoreKeeper.add(Icon(
+          Icons.check,
+          color: Colors.green,
+        ));
+      } else {
+        print('User got it wrong');
+        scoreKeeper.add(Icon(
+          Icons.close,
+          color: Colors.red,
+        ));
+      }
+
+      quizBrain.nextQuestion(); // FOR ENCAPSULATION PURPOSES
+    });
+  }
 
   // NOTE: We are using ENCAPSULATION becoz we don't want to give main.dart the power to modify the questionBank inside quiz_brain.dart, eg -
   // quizBrain.questionBank[questionNumber].questionAnswer = true;
@@ -70,17 +107,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer =
-                    quizBrain.getCorrectAnswer(); //  FOR ENCAPSULATION PURPOSES
-
-                if (correctAnswer == true) {
-                  print('User got it right');
-                } else {
-                  print('User got it wrong');
-                }
-                setState(() {
-                  quizBrain.nextQuestion(); // FOR ENCAPSULATION PURPOSES
-                });
+                checkAnswer(true);
               },
             ),
           ),
@@ -98,17 +125,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer =
-                    quizBrain.getCorrectAnswer(); //  FOR ENCAPSULATION PURPOSES
-
-                if (correctAnswer == false) {
-                  print('User got it right');
-                } else {
-                  print('User got it wrong');
-                }
-                setState(() {
-                  quizBrain.nextQuestion(); // FOR ENCAPSULATION PURPOSES
-                });
+                checkAnswer(false);
               },
             ),
           ),
